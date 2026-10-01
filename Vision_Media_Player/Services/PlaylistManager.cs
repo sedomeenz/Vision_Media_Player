@@ -1,3 +1,5 @@
+using Vision_Media_Player.models;
+
 namespace Vision_Media_Player.Services;
 
 public class PlaylistManager
@@ -35,9 +37,9 @@ public class PlaylistManager
     }
     
     // Renaming the playlist name 
-    public void RenameThePlaylist(Playlist playlist, string title)
+    public void RenameThePlaylist(Playlist playlist, string name)
     {
-        playlist.Title = title;
+        playlist.Name = name;
     }
     
     // Searching a playlist by name
@@ -46,7 +48,7 @@ public class PlaylistManager
         var result = new List<Playlist>();
         foreach (var playlist in _playlists)
         {
-            if (playlist.Title.Contains(title, StringComparison.OrdinalIgnoreCase))
+            if (playlist.Name.Contains(title, StringComparison.OrdinalIgnoreCase))
             {
                 result.Add(playlist);
             }

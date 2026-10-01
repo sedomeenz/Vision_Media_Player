@@ -1,10 +1,12 @@
-namespace Vision_Media_Player;
+namespace Vision_Media_Player.models;
 
 public class Media
 {
-    public string Title { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public MediaType Type { get; set; }
     public string FilePath { get; set; }
-    public string Owner { get; }
     public TimeSpan Duration { get; set; }
     public DateTime CreatedAt { get; private set; }
+    
 }

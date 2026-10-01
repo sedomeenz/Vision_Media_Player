@@ -1,3 +1,5 @@
+using Vision_Media_Player.models;
+
 namespace Vision_Media_Player.Services;
 
 public class UserManager

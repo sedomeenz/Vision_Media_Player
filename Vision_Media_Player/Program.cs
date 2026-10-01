@@ -1,6 +1,8 @@
 ﻿using System;
 using Vision_Media_Player.Menus;
 using Vision_Media_Player.Services;
+using Vision_Media_Player.Menus;
+using Vision_Media_Player.Services;
 
 namespace Vision_Media_Player
 {

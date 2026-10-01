@@ -131,8 +131,8 @@ public class MediaMenu
         Console.WriteLine("ALL YOUR MEDIA:");
 
         var allMedia = _mediaManager.DisplayAllMedia();
-        var allSongs = _mediaManager.DisplayAllSongs();
-        var allMovies = _mediaManager.DisplayAllMovies();
+        var allAudio = _mediaManager.DisplayAllAudio();
+        var allVideos = _mediaManager.DisplayAllVideos();
 
         if (allMedia.Count == 0)
         {
@@ -140,25 +140,25 @@ public class MediaMenu
             return;
         }
 
-        if (allSongs.Count > 0)
+        if (allAudio.Count > 0)
         {
             Console.WriteLine("===== All Songs =====");
 
-            for (int i = 0; i < allSongs.Count; i++)
+            for (int i = 0; i < allVideos.Count; i++)
             {
                 Console.WriteLine(
-                    $"{i + 1}. File name: {allSongs[i].Title} | Type: Song");
+                    $"{i + 1}. File name: {allAudio[i].Name} | Type: Song");
             }
         }
 
-        if (allMovies.Count > 0)
+        if (allVideos.Count > 0)
         {
             Console.WriteLine("===== All Movies =====");
 
-            for (int i = 0; i < allMovies.Count; i++)
+            for (int i = 0; i < allVideos.Count; i++)
             {
                 Console.WriteLine(
-                    $"{i + 1}. File name: {allMovies[i].Title} | Type: Movie");
+                    $"{i + 1}. File name: {allVideos[i].Name} | Type: Movie");
             }
         }
     }
