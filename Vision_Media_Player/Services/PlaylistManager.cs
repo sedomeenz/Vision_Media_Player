@@ -21,13 +21,24 @@ public class PlaylistManager
     // Adding media to the playlist
     public void AddMediaToPlaylist(Playlist playlist, Media media)
     {
-        playlist.Items.Add(media);
+        playlist.PlaylistMedias.Add(new PlaylistMedia
+        {
+            PlaylistId = playlist.Id,
+            MediaId = media.Id,
+            Playlist =  playlist,
+            Media = media
+        });
     }
     
     // Deleting media from the playlist
     public void DeleteMediaFromPlaylist(Playlist playlist, Media media)
     {
-        playlist.Items.Remove(media);
+        var playlistMedia = playlist.PlaylistMedias.FirstOrDefault(pm => pm.MediaId == media.Id);
+
+        if (playlistMedia != null)
+        {
+            playlist.PlaylistMedias.Remove(playlistMedia);
+        }
     }
     
     // Displaying all the playlist 

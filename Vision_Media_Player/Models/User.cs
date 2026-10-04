@@ -6,6 +6,8 @@ public class User
     public string Name { get; set; }
     public string Email { get; set; }
     public DateTime JoinedIn {get; private  set;}
+
+    public List<Playlist> Playlists { get; set; } = new();
     
     public User(string name, string email, DateTime joinedIn)
     {

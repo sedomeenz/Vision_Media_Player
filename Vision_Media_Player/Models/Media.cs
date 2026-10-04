@@ -7,6 +7,7 @@ public class Media
     public MediaType Type { get; set; }
     public string FilePath { get; set; }
     public TimeSpan Duration { get; set; }
-    public DateTime CreatedAt { get; private set; }
+    public DateTime CreatedAt { get; set; }
     
+    public List<PlaylistMedia> PlaylistMedias { get; set; } = new();
 }
