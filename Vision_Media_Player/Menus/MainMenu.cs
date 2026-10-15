@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Vision_Media_Player.Services;
+using Vision_Media_Player.Data;
 
 namespace Vision_Media_Player.Menus;
 
@@ -7,18 +9,18 @@ public class MainMenu
     private readonly MediaManager _mediaManager;
     private readonly PlaylistManager _playlistManager;
     private readonly UserManager _userManager;
-    private readonly MediaFileManager _mediaFileManager;
+    private readonly MediaStorageManager _mediaStorageManager;
 
     public MainMenu(
         MediaManager mediaManager,
         PlaylistManager playlistManager,
         UserManager userManager,
-        MediaFileManager mediaFileManager)
+        MediaStorageManager mediaStorageManager)
     {
         _mediaManager = mediaManager;
         _playlistManager = playlistManager;
         _userManager = userManager;
-        mediaFileManager = mediaFileManager;
+        _mediaStorageManager = mediaStorageManager;
     }
 
     public void ShowMainMenu()
@@ -49,7 +51,7 @@ public class MainMenu
             {
                 case "1":
                     // Media menu
-                    var mediaMenu = new MediaMenu(_mediaManager, _mediaFileManager);
+                    var mediaMenu = new MediaMenu(_mediaManager, _mediaStorageManager);
                     mediaMenu.ShowMediaMenu();
                     break;
 

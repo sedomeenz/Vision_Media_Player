@@ -1,4 +1,7 @@
-
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Vision_Media_Player.Services;
 
 namespace Vision_Media_Player.Menus;
@@ -6,12 +9,10 @@ namespace Vision_Media_Player.Menus;
 public class MediaMenu
 {
     private readonly MediaManager _mediaManager;
-    private readonly MediaFileManager _mediaFileManager;
 
-    public MediaMenu(MediaManager mediaManager, MediaFileManager mediaFileManager)
+    public MediaMenu(MediaManager mediaManager, MediaStorageManager mediaStorageManager)
     {
         _mediaManager = mediaManager;
-        _mediaFileManager = mediaFileManager;
     }
 
     public void ShowMediaMenu()
@@ -19,107 +20,49 @@ public class MediaMenu
         while (true)
         {
             Console.Clear();
-
-            Console.WriteLine("===== Media =====");
-
-            ShowAllMediaFiles();
-
+            
+            var allMedia = _mediaManager.DisplayAllMedia();
+            
+            Console.WriteLine("==================================");
+            Console.WriteLine("         MEDIA LIBRARY");
+            Console.WriteLine("==================================");
             Console.WriteLine();
+            Console.WriteLine($"Total Media: {allMedia.Count}");
             Console.WriteLine();
-            Console.WriteLine("Add single media                 add -s <filepath>");
-            Console.WriteLine("Add multi media from folder      add -m <folderpath>");
-            Console.WriteLine("Play media                       play <filename>");
-            Console.WriteLine("Delete media                     dlt <filename1> <filename2> <filename3>");
-            Console.WriteLine("Search media                     srch -n <filename>");
-            Console.WriteLine("Back to main menu                >");
+            Console.WriteLine("1. Show All Media");
+            Console.WriteLine("2. Add Media");
+            Console.WriteLine("3. Delete Media");
+            Console.WriteLine("4. Search Media");
+            Console.WriteLine("0. Back to Main Menu");
             Console.WriteLine();
-
-            Console.Write("Run > ");
-            string? input = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(input))
-                continue;
-
-            string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            string command = parts[0].ToLower();
-
-            switch (command)
+            Console.Write("Choose an option: ");
+            
+            string? choice = Console.ReadLine();
+            
+            switch (choice)
             {
-                case "add":
-
-                    if (parts.Length < 2)
-                    {
-                        Console.WriteLine("Usage: add -s <filepath>");
-                        Console.ReadKey();
-                        break;
-                    }
-
-                    if (parts[1].ToLower() == "-s")
-                    {
-                        if (parts.Length < 3)
-                        {
-                            Console.WriteLine("Usage: add -s <filepath>");
-                            Console.ReadKey();
-                            break;
-                        }
-
-                        var filePaths = new List<string>();
-
-                        for (int i = 2; i < parts.Length; i++)
-                        {
-                            filePaths.Add(parts[i]);
-                        }
-
-                        var finalResults =
-                            _mediaManager.AddMediaThroughFilePath(filePaths);
-
-                        foreach (var result in finalResults)
-                        {
-                            Console.WriteLine(result);
-                        }
-                    }
-
+                case "1":
+                    ShowAllMediaFiles();
                     break;
 
-                case "play":
+                case "2":
+                    AddMedia();
                     break;
 
-                case "dlt":
-
-                    if (parts.Length < 2)
-                    {
-                        Console.WriteLine(
-                            "Usage: dlt <filename1> <filename2> <filename3>");
-                        Console.ReadKey();
-                        break;
-                    }
-
-                    var filenames = new List<string>();
-
-                    for (int i = 1; i < parts.Length; i++)
-                    {
-                        filenames.Add(parts[i]);
-                    }
-
-                    var finalResult = _mediaManager.RemoveMedia(filenames);
-
-                    foreach (var result in finalResult)
-                    {
-                        Console.WriteLine(result);
-                    }
-
+                case "3":
+                    DeleteMedia();
                     break;
 
-                case "srch":
+                case "4":
+                    SearchMedia();
                     break;
 
-                case ">":
+                case "0":
                     return;
 
                 default:
-                    Console.WriteLine(
-                        $"The command '{input}' was not recognized.");
-                    Console.ReadKey();
+                    Console.WriteLine("Invalid option.");
+                    Pause();
                     break;
             }
         }
@@ -127,12 +70,54 @@ public class MediaMenu
 
     private void ShowAllMediaFiles()
     {
-        Console.WriteLine();
-        Console.WriteLine("ALL YOUR MEDIA:");
+        Console.Clear();
 
+        Console.WriteLine("========== ALL MEDIA ==========");
+        Console.WriteLine();
+
+        ShowMediaList();
+
+        Pause();
+    }
+    
+    private void AddMedia()
+    {
+        Console.Clear();
+        Console.WriteLine("========== ADD MEDIA ==========");
+        Console.WriteLine();
+        Console.WriteLine("Enter the full path of the media file.");
+        Console.WriteLine("Example: C:\\Music\\Dream On.mp3");
+        Console.WriteLine();
+        Console.Write("File path (0 to cancel): ");
+
+        string? filePath = Console.ReadLine()?.Trim().Trim('"');
+
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            Console.WriteLine("File path cannot be empty.");
+            Pause();
+            return;
+        }
+
+        if (filePath == "0")
+            return;
+        
+        var results = _mediaManager.AddMediaThroughFilePath(new List<string> { filePath });
+
+        foreach (var result in results)
+        {
+            Console.WriteLine(result);
+        }
+        
+        Pause();
+    }
+
+    private void ShowMediaList()
+    {
         var allMedia = _mediaManager.DisplayAllMedia();
-        var allAudio = _mediaManager.DisplayAllAudio();
-        var allVideos = _mediaManager.DisplayAllVideos();
+
+        Console.WriteLine("========== YOUR MEDIA ==========");
+        Console.WriteLine();
 
         if (allMedia.Count == 0)
         {
@@ -140,27 +125,121 @@ public class MediaMenu
             return;
         }
 
-        if (allAudio.Count > 0)
+        foreach (var media in allMedia)
         {
-            Console.WriteLine("===== All Songs =====");
+            Console.WriteLine(
+                $"ID: {media.Id} | Name: {media.Name} | Type: {media.Type}");
+        }
+    }
+    
+    private void DeleteMedia()
+    {
+        Console.Clear();
+        
+        ShowMediaList();
+        
+        var allmedia = _mediaManager.DisplayAllMedia();
 
-            for (int i = 0; i < allVideos.Count; i++)
+        if (allmedia.Count == 0)
+        {
+            Pause();
+            return;
+        }
+        
+        Console.WriteLine();
+        Console.Write("Enter the media ID to delete (0 to cancel): ");
+
+        if (!int.TryParse(Console.ReadLine(), out int mediaId))
+        {
+            Console.WriteLine("Invalid media ID.");
+            Pause();
+            return;
+        }
+
+        if (mediaId == 0)
+            return;
+        
+        var media = allmedia.FirstOrDefault(m => m.Id == mediaId);
+
+        if (media == null)
+        {
+            Console.WriteLine("Media not found.");
+            Pause();
+            return;
+        }
+        
+        Console.WriteLine($"Are you sure you want to delete \"{media.Name}\"? (y/n)");
+
+        string? confirm = Console.ReadLine();
+
+        if (!string.Equals(confirm, "y", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine("Deletion cancelled.");
+            Pause();
+            return;
+        }
+
+        string filename = Path.GetFileName(media.FilePath);
+
+        var results = _mediaManager.RemoveMedia(new List<string> { filename });
+
+        foreach (var result in results)
+        {
+            Console.WriteLine(result);
+        }
+        
+        Pause();
+
+    }
+    private void SearchMedia()
+    {
+        Console.Clear();
+
+        Console.WriteLine("========== SEARCH MEDIA ==========");
+        Console.WriteLine();
+        Console.Write("Enter a media title (0 to cancel): ");
+
+        string? title = Console.ReadLine()?.Trim();
+
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            Console.WriteLine("Search title cannot be empty.");
+            Pause();
+            return;
+        }
+
+        if (title == "0")
+            return;
+
+        var results = _mediaManager.SearchMediaByTitle(title);
+
+        Console.WriteLine();
+        Console.WriteLine("========== SEARCH RESULTS ==========");
+        Console.WriteLine();
+
+        if (results.Count == 0)
+        {
+            Console.WriteLine("No matching media found.");
+        }
+        else
+        {
+            foreach (var media in results)
             {
                 Console.WriteLine(
-                    $"{i + 1}. File name: {allAudio[i].Name} | Type: Song");
+                    $"ID: {media.Id} | " +
+                    $"Name: {media.Name} | " +
+                    $"Type: {media.Type}");
             }
         }
 
-        if (allVideos.Count > 0)
-        {
-            Console.WriteLine("===== All Movies =====");
-
-            for (int i = 0; i < allVideos.Count; i++)
-            {
-                Console.WriteLine(
-                    $"{i + 1}. File name: {allVideos[i].Name} | Type: Movie");
-            }
-        }
+        Pause();
+    }
+    
+    private void Pause()
+    {
+        Console.WriteLine();
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
     }
 }
 
