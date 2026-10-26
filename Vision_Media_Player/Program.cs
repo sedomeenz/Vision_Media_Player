@@ -18,7 +18,7 @@ namespace Vision_Media_Player
             
             var storageManager = new MediaStorageManager();
             var mediaManager = new MediaManager(context, storageManager);
-            var playlistManager = new PlaylistManager();
+            var playlistManager = new PlaylistManager(context);
             var userManager = new UserManager(context);
             
             var mainMenu = new MainMenu(

@@ -8,6 +8,11 @@ public class PlaylistManager
 {
     private readonly AppDbContext _context;
     
+    public PlaylistManager(AppDbContext context)
+    {
+        _context = context;
+    }
+    
     // Creating a new playlist
     public bool CreateNewPlaylist(Playlist playlist)
     {
@@ -19,12 +24,12 @@ public class PlaylistManager
     // Deleting a playlist
     public bool DeletePlaylist(Playlist playlist)
     {
-        var exixstPlaylist = _context.Playlists.FirstOrDefault(p => p.Id == playlist.Id);       
+        var existPlaylist = _context.Playlists.FirstOrDefault(p => p.Id == playlist.Id);       
         
-        if (exixstPlaylist == null)
+        if (existPlaylist == null)
             return false;
         
-        _context.Playlists.Remove(exixstPlaylist);
+        _context.Playlists.Remove(existPlaylist);
         
         return _context.SaveChanges() > 0;
     }
@@ -44,7 +49,9 @@ public class PlaylistManager
         if (alreadyExist)
             return false;
         
-        
+        var playlistMedia = new PlaylistMedia(){PlaylistId =  playlist.Id, MediaId = media.Id};
+        _context.PlaylistMedia.Add(playlistMedia);
+        return _context.SaveChanges() > 0;
     }
     
     // Deleting media from the playlist

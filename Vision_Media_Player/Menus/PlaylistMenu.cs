@@ -19,24 +19,25 @@ public class PlaylistMenu
         {
             Console.Clear();
 
-            Console.WriteLine("===== Playlists =====");
-            
-            ShowAllPlaylists();
-            
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine("Create A New Playlist                 create ");
-            Console.WriteLine("Delete Playlist                 ");
-            Console.WriteLine("Show All Playlists                 ");
-            Console.WriteLine("Add Media to Playlist                 ");
-            Console.WriteLine("Remove Media from Playlist                 ");
-            Console.WriteLine("Back");
+            var allPLaylist = _playlistManager.DisplayAllPlaylists();
 
-            Console.ResetColor();
+            Console.WriteLine("==================================");
+            Console.WriteLine("    PLAYLIST LIBRARY LIBRARY");
+            Console.WriteLine("==================================");
             Console.WriteLine();
-
-            Console.Write("Choose an option:");
+            Console.WriteLine($"Total Playlist: {allPLaylist.Count}");
+            Console.WriteLine();
+            Console.WriteLine("1. Create A New Playlist");
+            Console.WriteLine("2. Delete Playlist");
+            Console.WriteLine("3. Show All Playlists");
+            Console.WriteLine("4. Add Media to Playlist");
+            Console.WriteLine("5. Remove Media from Playlist");
+            Console.WriteLine("0. Back");
+            Console.WriteLine();
+            Console.Write("Choose an option: ");
+            
             string? choice = Console.ReadLine();
+            
             switch (choice)
             {
                 case "1":
@@ -52,7 +53,7 @@ public class PlaylistMenu
                     break;
 
                 case "4":
-                    // Add Media
+                    // Add Media To The Playlist
                     break;
 
                 case "5":
@@ -75,4 +76,6 @@ public class PlaylistMenu
         
         
     }
+    
+    
 }

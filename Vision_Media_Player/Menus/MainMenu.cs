@@ -33,7 +33,7 @@ public class MainMenu
             Console.WriteLine();
             // Console.WriteLine("  _   ___     _             __  ___       ___        ___  __                 \n | | / (_)__ (_)__  ___    /  |/  /__ ___/ (_)__ _  / _ \\/ /__ ___ _____ ____\n | |/ / (_-</ / _ \\/ _ \\  / /|_/ / -_) _  / / _ `/ / ___/ / _ `/ // / -_) __/\n |___/_/___/_/\\___/_//_/ /_/  /_/\\__/\\_,_/_/\\_,_/ /_/  /_/\\_,_/\\_, /\\__/_/   \n                                                              /___/          ");
 
-            Console.WriteLine("Welcom to Vision Media Player");
+            Console.WriteLine("Welcome to Vision Media Player");
 
             Console.WriteLine("1. Media");
             Console.WriteLine("2. Playlists");
@@ -57,7 +57,7 @@ public class MainMenu
 
                 case "2":
                     // Playlist menu
-                    var playlistMenu = new PlaylistMenu(_playlistManager);
+                    var playlistMenu = new PlaylistMenu();
                     break;
 
                 case "3":

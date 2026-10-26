@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Vision_Media_Player.Helpers;
 using Vision_Media_Player.Services;
+
+
 
 namespace Vision_Media_Player.Menus;
 
@@ -62,7 +65,7 @@ public class MediaMenu
 
                 default:
                     Console.WriteLine("Invalid option.");
-                    Pause();
+                    ConsoleHelper.Pause();
                     break;
             }
         }
@@ -76,42 +79,9 @@ public class MediaMenu
         Console.WriteLine();
 
         ShowMediaList();
-
-        Pause();
+        ConsoleHelper.Pause();
     }
     
-    private void AddMedia()
-    {
-        Console.Clear();
-        Console.WriteLine("========== ADD MEDIA ==========");
-        Console.WriteLine();
-        Console.WriteLine("Enter the full path of the media file.");
-        Console.WriteLine("Example: C:\\Music\\Dream On.mp3");
-        Console.WriteLine();
-        Console.Write("File path (0 to cancel): ");
-
-        string? filePath = Console.ReadLine()?.Trim().Trim('"');
-
-        if (string.IsNullOrWhiteSpace(filePath))
-        {
-            Console.WriteLine("File path cannot be empty.");
-            Pause();
-            return;
-        }
-
-        if (filePath == "0")
-            return;
-        
-        var results = _mediaManager.AddMediaThroughFilePath(new List<string> { filePath });
-
-        foreach (var result in results)
-        {
-            Console.WriteLine(result);
-        }
-        
-        Pause();
-    }
-
     private void ShowMediaList()
     {
         var allMedia = _mediaManager.DisplayAllMedia();
@@ -132,6 +102,38 @@ public class MediaMenu
         }
     }
     
+    private void AddMedia()
+    {
+        Console.Clear();
+        Console.WriteLine("========== ADD MEDIA ==========");
+        Console.WriteLine();
+        Console.WriteLine("Enter the full path of the media file.");
+        Console.WriteLine("Example: C:\\Music\\Dream On.mp3");
+        Console.WriteLine();
+        Console.Write("File path (0 to cancel): ");
+
+        string? filePath = Console.ReadLine()?.Trim().Trim('"');
+
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            Console.WriteLine("File path cannot be empty.");
+            ConsoleHelper.Pause();
+            return;
+        }
+
+        if (filePath == "0")
+            return;
+        
+        var results = _mediaManager.AddMediaThroughFilePath(new List<string> { filePath });
+
+        foreach (var result in results)
+        {
+            Console.WriteLine(result);
+        }
+        
+        ConsoleHelper.Pause();
+    }
+    
     private void DeleteMedia()
     {
         Console.Clear();
@@ -142,7 +144,7 @@ public class MediaMenu
 
         if (allmedia.Count == 0)
         {
-            Pause();
+            ConsoleHelper.Pause();
             return;
         }
         
@@ -152,7 +154,7 @@ public class MediaMenu
         if (!int.TryParse(Console.ReadLine(), out int mediaId))
         {
             Console.WriteLine("Invalid media ID.");
-            Pause();
+            ConsoleHelper.Pause();
             return;
         }
 
@@ -164,7 +166,7 @@ public class MediaMenu
         if (media == null)
         {
             Console.WriteLine("Media not found.");
-            Pause();
+            ConsoleHelper.Pause();
             return;
         }
         
@@ -175,7 +177,7 @@ public class MediaMenu
         if (!string.Equals(confirm, "y", StringComparison.OrdinalIgnoreCase))
         {
             Console.WriteLine("Deletion cancelled.");
-            Pause();
+            ConsoleHelper.Pause();
             return;
         }
 
@@ -188,9 +190,9 @@ public class MediaMenu
             Console.WriteLine(result);
         }
         
-        Pause();
-
+        ConsoleHelper.Pause();
     }
+    
     private void SearchMedia()
     {
         Console.Clear();
@@ -204,8 +206,7 @@ public class MediaMenu
         if (string.IsNullOrWhiteSpace(title))
         {
             Console.WriteLine("Search title cannot be empty.");
-            Pause();
-            return;
+            ConsoleHelper.Pause();            return;
         }
 
         if (title == "0")
@@ -231,15 +232,8 @@ public class MediaMenu
                     $"Type: {media.Type}");
             }
         }
-
-        Pause();
-    }
-    
-    private void Pause()
-    {
-        Console.WriteLine();
-        Console.WriteLine("Press any key to continue...");
-        Console.ReadKey();
+        
+        ConsoleHelper.Pause();
     }
 }
 
