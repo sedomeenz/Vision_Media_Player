@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Vision_Media_Player.models;
 using Vision_Media_Player.Data;
 
-
 namespace Vision_Media_Player.Services;
 
 public class MediaManager
