@@ -128,10 +128,11 @@ public class MediaManager
         return extension switch
         {
             ".mp3" or ".wav" or ".flac" or ".aac"
-                => MediaType.Audio,
+                or ".m4a" or ".wma" or ".ogg" or ".opus"
+                or ".aiff" or ".aif" => MediaType.Audio,
 
-            ".mp4" or ".mkv" or ".avi" or ".mov"
-                => MediaType.Video,
+            ".mp4" or ".mkv" or ".avi" or ".mov" 
+                or ".wmv" or ".webm" or ".m4v" => MediaType.Video,
 
             _ => throw new NotSupportedException()
         };

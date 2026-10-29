@@ -22,7 +22,6 @@ public class MainMenu
         _userManager = userManager;
         _mediaStorageManager = mediaStorageManager;
     }
-
     public void ShowMainMenu()
     {
         while (true)
@@ -57,7 +56,7 @@ public class MainMenu
 
                 case "2":
                     // Playlist menu
-                    var playlistMenu = new PlaylistMenu();
+                    var playlistMenu = new PlaylistMenu(_mediaStorageManager, _playlistManager);
                     break;
 
                 case "3":

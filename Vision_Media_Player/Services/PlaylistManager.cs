@@ -82,12 +82,12 @@ public class PlaylistManager
     {
        playlist.Name = name;
        _context.Playlists.Update(playlist); 
-       _context.SaveChanges();
+        return _context.SaveChanges() > 0;
     }
     
     // Searching a playlist by name
     public List<Playlist> SearchPlaylistsByTitle(string title)
     {
-       
+        return new List<Playlist>();
     }  
 }
