@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using Vision_Media_Player.models;
 using Vision_Media_Player.Data;
@@ -7,87 +8,155 @@ namespace Vision_Media_Player.Services;
 public class PlaylistManager
 {
     private readonly AppDbContext _context;
-    
+
     public PlaylistManager(AppDbContext context)
     {
         _context = context;
     }
-    
+
     // Creating a new playlist
-    public bool CreateNewPlaylist(Playlist playlist)
+    public bool CreateNewPlaylist(string name, int userId)
     {
-        _context.Playlists.Add(playlist);
-        
-        return _context.SaveChanges() > 0;
-    }
-    
-    // Deleting a playlist
-    public bool DeletePlaylist(Playlist playlist)
-    {
-        var existPlaylist = _context.Playlists.FirstOrDefault(p => p.Id == playlist.Id);       
-        
-        if (existPlaylist == null)
+        if (string.IsNullOrWhiteSpace(name))
             return false;
-        
-        _context.Playlists.Remove(existPlaylist);
-        
+
+        bool userExists = _context.Users.Any(u => u.Id == userId);
+
+        if (!userExists)
+            return false;
+
+        var playlist = new Playlist
+        {
+            Name = name.Trim(),
+            UserId = userId
+        };
+
+        _context.Playlists.Add(playlist);
+
         return _context.SaveChanges() > 0;
     }
 
-    // Adding media to the playlist
-    public bool AddMediaToPlaylist(Playlist playlist, Media media)
+    // Adding media to a playlist
+    public bool AddMediaToPlaylist(int playlistId, int mediaId)
     {
-        bool playlistExist = _context.Playlists.Any(p => p.Id == playlist.Id);
-        
-        bool mediaExist = _context.Medias.Any(m => m.Id == media.Id);
-        
-        if (!playlistExist || !mediaExist)
+        bool playlistExists = _context.Playlists
+            .Any(p => p.Id == playlistId);
+
+        bool mediaExists = _context.Medias
+            .Any(m => m.Id == mediaId);
+
+        if (!playlistExists || !mediaExists)
             return false;
-        
-        bool alreadyExist = _context.PlaylistMedia.Any(pm => pm.PlaylistId == playlist.Id && pm.MediaId == media.Id);
-        
-        if (alreadyExist)
+
+        bool alreadyExists = _context.PlaylistMedia
+            .Any(pm => pm.PlaylistId == playlistId &&
+                       pm.MediaId == mediaId);
+
+        if (alreadyExists)
             return false;
-        
-        var playlistMedia = new PlaylistMedia(){PlaylistId =  playlist.Id, MediaId = media.Id};
+
+        var playlistMedia = new PlaylistMedia
+        {
+            PlaylistId = playlistId,
+            MediaId = mediaId
+        };
+
         _context.PlaylistMedia.Add(playlistMedia);
+
         return _context.SaveChanges() > 0;
     }
-    
-    // Deleting media from the playlist
-    public bool DeleteMediaFromPlaylist(Playlist playlist, Media media)
+
+    // Removing media from a playlist
+    public bool DeleteMediaFromPlaylist(int playlistId, int mediaId)
     {
-        var playlistMedia = _context.PlaylistMedia.FirstOrDefault(x => x.PlaylistId == playlist.Id && x.MediaId == media.Id);
-        
+        var playlistMedia = _context.PlaylistMedia
+            .FirstOrDefault(pm =>
+                pm.PlaylistId == playlistId &&
+                pm.MediaId == mediaId);
+
         if (playlistMedia == null)
             return false;
-        
+
         _context.PlaylistMedia.Remove(playlistMedia);
-        _context.SaveChanges();
-        
-        return true;
+
+        return _context.SaveChanges() > 0;
     }
-    
-    // Displaying all the playlist 
+
+    // Displaying all playlists and their media
     public List<Playlist> DisplayAllPlaylists()
     {
         return _context.Playlists
+            .AsNoTracking()
             .Include(p => p.PlaylistMedias)
             .ThenInclude(pm => pm.Media)
             .ToList();
     }
-    
-    // Renaming the playlist name 
-    public bool RenameThePlaylist(Playlist playlist, string name)
+
+    // Displaying a specific playlist and its media
+    public Playlist? DisplayPlaylist(int playlistId)
     {
-       playlist.Name = name;
-       _context.Playlists.Update(playlist); 
+        return _context.Playlists
+            .AsNoTracking()
+            .Include(p => p.PlaylistMedias)
+            .ThenInclude(pm => pm.Media)
+            .FirstOrDefault(p => p.Id == playlistId);
+    }
+
+    // Deleting a playlist
+    public bool DeletePlaylist(int playlistId)
+    {
+        var playlist = _context.Playlists
+            .FirstOrDefault(p => p.Id == playlistId);
+
+        if (playlist == null)
+            return false;
+
+        var playlistMedias = _context.PlaylistMedia
+            .Where(pm => pm.PlaylistId == playlistId)
+            .ToList();
+
+        _context.PlaylistMedia.RemoveRange(playlistMedias);
+
+        _context.Playlists.Remove(playlist);
+
         return _context.SaveChanges() > 0;
     }
-    
-    // Searching a playlist by name
+
+    // Renaming a playlist
+    public bool RenameThePlaylist(int playlistId, string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+            return false;
+
+        var playlist = _context.Playlists
+            .FirstOrDefault(p => p.Id == playlistId);
+
+        if (playlist == null)
+            return false;
+
+        newName = newName.Trim();
+
+        if (playlist.Name == newName)
+            return true;
+
+        playlist.Name = newName;
+
+        return _context.SaveChanges() > 0;
+    }
+
+    // Searching playlists by name
     public List<Playlist> SearchPlaylistsByTitle(string title)
     {
-        return new List<Playlist>();
-    }  
+        if (string.IsNullOrWhiteSpace(title))
+            return new List<Playlist>();
+
+        string searchTerm = title.Trim().ToLower();
+
+        return _context.Playlists
+            .AsNoTracking()
+            .Where(p => p.Name.ToLower().Contains(searchTerm))
+            .Include(p => p.PlaylistMedias)
+            .ThenInclude(pm => pm.Media)
+            .ToList();
+    }
 }

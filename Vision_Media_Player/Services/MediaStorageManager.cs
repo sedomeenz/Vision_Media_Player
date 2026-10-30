@@ -50,14 +50,18 @@ public class MediaStorageManager
         return destinationPath;
     }
 
-    public void DeleteMediaFile(string relativePath)
+    public bool MediaFileExists(string relativePath)
     {
-        string fullPath = GetUniqueFilePath(relativePath);
+        string fullPath = GetFullPath(relativePath);
 
-        if (File.Exists(fullPath))
+        if (!File.Exists(fullPath))
         {
-            File.Delete(fullPath);
+            return false;
         }
+
+        File.Delete(fullPath);
+
+        return true;
     }
 
     public string GetRelativePath(string fullPath)

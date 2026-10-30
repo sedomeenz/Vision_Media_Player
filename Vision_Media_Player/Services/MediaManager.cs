@@ -72,28 +72,43 @@ public class MediaManager
     */
     
     // Removing list of chosen media
-    public List<string> RemoveMedia(List<string> filenames)
+    
+   
+    public string RemoveMedia(int mediaId)
     {
-     
-        var results = new List<string>();
+        var media = _context.Medias.FirstOrDefault(x => x.Id == mediaId);
 
-        foreach (var filename in filenames)
+        if (media == null)
         {
-            var media = _context.Medias.FirstOrDefault(x => Path.GetFileName(x.FilePath).Equals(filename, StringComparison.OrdinalIgnoreCase));
-            
-            if (media == null)
-            {
-                results.Add($"{filename} Not Found ✘");
-                continue;
-            }
-            
-            _storageManager.DeleteMediaFile(media.FilePath);
-            _context.Medias.Remove(media);
-            results.Add($"{filename} Has Been Removed Successfully ✔");
+            return "Media Not Found.";
         }
-        _context.SaveChanges();
-        return results;
+
+        try
+        {
+            bool fileDeleted = _storageManager.MediaFileExists(media.FilePath);
+
+            _context.Medias.Remove(media);
+            _context.SaveChanges();
+
+            if (!fileDeleted)
+            {
+                return $"{media.Name} was removed from the database, but its physical file was already missing.";
+            }
+
+            return $"{media.Name} has been removed successfully.";
+        }
+        catch (IOException ex)
+        {
+            return $"Could not delete the media file: {ex.Message}";
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return $"Access denied while deleting the media file: {ex.Message}";
+        }
     }
+
+
+
 
     // Displaying all media
     public List<Media> DisplayAllMedia()
@@ -116,7 +131,12 @@ public class MediaManager
     // Searching media by title
     public List<Media> SearchMediaByTitle(string title)
     {
-        return _context.Medias.Where(x => x.Name.Contains(title, StringComparison.OrdinalIgnoreCase)).ToList();
+        if (string.IsNullOrWhiteSpace(title))
+            return DisplayAllMedia();
+
+        title = title.Trim();
+        
+        return _context.Medias.Where(m => m.Name.Contains(title)).ToList();
     }
     
     private MediaType GetMediaType(string filepath)
