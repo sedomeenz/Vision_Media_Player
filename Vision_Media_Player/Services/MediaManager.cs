@@ -64,16 +64,7 @@ public class MediaManager
         return results;
     }
     
-    /*
-    public List<string> AddMediaThroughFolderPaths(string folderPath)
-    {
-        
-    }
-    */
     
-    // Removing list of chosen media
-    
-   
     public string RemoveMedia(int mediaId)
     {
         var media = _context.Medias.FirstOrDefault(x => x.Id == mediaId);
@@ -107,9 +98,6 @@ public class MediaManager
         }
     }
 
-
-
-
     // Displaying all media
     public List<Media> DisplayAllMedia()
     {
@@ -139,6 +127,7 @@ public class MediaManager
         return _context.Medias.Where(m => m.Name.Contains(title)).ToList();
     }
     
+    // Determines the media type based on the file extension
     private MediaType GetMediaType(string filepath)
     {
         string extension =

@@ -15,20 +15,14 @@ public class PlaylistManager
     }
 
     // Creating a new playlist
-    public bool CreateNewPlaylist(string name, int userId)
+    public bool CreateNewPlaylist(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            return false;
-
-        bool userExists = _context.Users.Any(u => u.Id == userId);
-
-        if (!userExists)
             return false;
 
         var playlist = new Playlist
         {
             Name = name.Trim(),
-            UserId = userId
         };
 
         _context.Playlists.Add(playlist);
@@ -36,7 +30,7 @@ public class PlaylistManager
         return _context.SaveChanges() > 0;
     }
 
-    // Adding media to a playlist
+   // Adds media to a playlist if it is not already included
     public bool AddMediaToPlaylist(int playlistId, int mediaId)
     {
         bool playlistExists = _context.Playlists
@@ -66,7 +60,7 @@ public class PlaylistManager
         return _context.SaveChanges() > 0;
     }
 
-    // Removing media from a playlist
+    // Removes media from a playlist without deleting the media itself
     public bool DeleteMediaFromPlaylist(int playlistId, int mediaId)
     {
         var playlistMedia = _context.PlaylistMedia
@@ -92,7 +86,7 @@ public class PlaylistManager
             .ToList();
     }
 
-    // Displaying a specific playlist and its media
+    // Deletes a playlist and its media relationships
     public Playlist? DisplayPlaylist(int playlistId)
     {
         return _context.Playlists

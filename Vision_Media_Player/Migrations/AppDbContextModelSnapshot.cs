@@ -58,12 +58,7 @@ namespace Vision_Media_Player.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Playlists");
                 });
@@ -81,39 +76,6 @@ namespace Vision_Media_Player.Migrations
                     b.HasIndex("MediaId");
 
                     b.ToTable("PlaylistMedia");
-                });
-
-            modelBuilder.Entity("Vision_Media_Player.models.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("JoinedIn")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Vision_Media_Player.models.Playlist", b =>
-                {
-                    b.HasOne("Vision_Media_Player.models.User", "User")
-                        .WithMany("Playlists")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Vision_Media_Player.models.PlaylistMedia", b =>
@@ -143,11 +105,6 @@ namespace Vision_Media_Player.Migrations
             modelBuilder.Entity("Vision_Media_Player.models.Playlist", b =>
                 {
                     b.Navigation("PlaylistMedias");
-                });
-
-            modelBuilder.Entity("Vision_Media_Player.models.User", b =>
-                {
-                    b.Navigation("Playlists");
                 });
 #pragma warning restore 612, 618
         }
